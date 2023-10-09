@@ -1,5 +1,7 @@
 package transports;
 
+import exceptions.DuplicateModelNameException;
+
 import java.io.*;
 import java.util.Arrays;
 
@@ -44,32 +46,21 @@ public class Transports {
         }
     }
 
-    public static Transport inputTransport(InputStream in) throws IOException {
+    public static Transport inputTransport(InputStream in) throws IOException, DuplicateModelNameException {
         DataInputStream dataIn = new DataInputStream(in);
+        Transport transport;
         String classOfCar = dataIn.readUTF();
         String brand = dataIn.readUTF();
-        System.out.println(brand);
-        int size = 0, i=0;
-        while (in.available() > 0) {
-            dataIn.readUTF();
-            dataIn.readDouble();
-            size++;
-        }
-        double[] prices = new double[size];
-        String[] names = new String[size];
-        while (i < size) {
-            names[i] = dataIn.readUTF();
-            prices[i] = dataIn.readDouble();
-            System.out.println("Name: "+ names[i]+ "   Price: "+ prices[i]);
-            i++;
-        }
-        System.out.println(dataIn.readUTF());
         if (classOfCar.equals("class transports.Vehicle")) {
-            return new Vehicle(brand,names,prices);
+            transport = new Vehicle(brand, 0);
+        } else {
+            transport = new Bike(brand, 0);
         }
-        else {
-            return new Bike(1);
+        System.out.println(brand);
+        while (in.available() > 0) {
+            transport.addModel(dataIn.readUTF(), dataIn.readDouble());
         }
+        return transport;
     }
 
     public static void main(String[] args) {

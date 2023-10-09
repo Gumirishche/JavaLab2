@@ -4,7 +4,6 @@ import exceptions.DuplicateModelNameException;
 import exceptions.ModelPriceOutOfBoundsException;
 import exceptions.NoSuchModelNameException;
 
-import java.io.*;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -27,21 +26,16 @@ public class Vehicle implements Transport {
         this.models = models;
     }
 
-    public Vehicle(String brand, String[] names, double[] prices) {
-        this.brand = brand;
-        Model[] models1 = new Model[names.length];
-        for(int i =0;i<names.length;i++){
-            models1[i]=new Model(names[i],prices[i]);
-        }
-        this.models=models1;
-    }
-
     public Vehicle(String brand, int size) {
         this.brand = brand;
         models = new Model[size];
         for (int i = 0; i < size; i++) {
             models[i] = new Model("RC" + i, 1000 * i);
         }
+    }
+
+    public int getSize(){
+        return models.length;
     }
 
     public String getBrand() {
@@ -136,13 +130,13 @@ public class Vehicle implements Transport {
     }
 
     public void removeModel(String name) throws NoSuchModelNameException {
-        Model[] newModels = new Model[models.length - 1];
+       /// Model[] newModels = new Model[models.length - 1];
         boolean flag = false;
         for (int i = 0; i < models.length; i++) {
             if (Objects.equals(models[i].name, name)) {
-                System.arraycopy(models, 0, newModels, 0, i);
-                System.arraycopy(models, i + 1, newModels, i, models.length - i - 1);
-                models = newModels;
+                //System.arraycopy(models, 0, newModels, 0, i);
+                System.arraycopy(models, i + 1, models, i, models.length - i - 1);
+                models = Arrays.copyOf(models, models.length-1);
                 flag = true;
                 break;
             }
@@ -153,36 +147,36 @@ public class Vehicle implements Transport {
     }
 
 
-    public static void main(String[] args) throws NoSuchModelNameException, DuplicateModelNameException, IOException {
+    public static void main(String[] args) throws NoSuchModelNameException, DuplicateModelNameException {
         Vehicle vehicle = new Vehicle("Mitsy", 6);
         String[] names = vehicle.allNames();
         double[] prices = vehicle.allPrices();
         for (int i = 0; i < vehicle.allNames().length; i++) {
             System.out.println(names[i] + " : " + prices[i]);
         }
-        vehicle.modifyPrice("RC4", 12345);
-        prices = vehicle.allPrices();
-        names = vehicle.allNames();
-        for (int i = 0; i < vehicle.allNames().length; i++) {
-            System.out.println(names[i] + " : " + prices[i]);
-        }
-        vehicle.addModel("CZ", 54312);
-        prices = vehicle.allPrices();
-        names = vehicle.allNames();
-        for (int i = 0; i < vehicle.allNames().length; i++) {
-            System.out.println(names[i] + " : " + prices[i]);
-        }
+//        vehicle.modifyPrice("RC4", 12345);
+//        prices = vehicle.allPrices();
+//        names = vehicle.allNames();
+//        for (int i = 0; i < vehicle.allNames().length; i++) {
+//            System.out.println(names[i] + " : " + prices[i]);
+//        }
+//        vehicle.addModel("CZ", 54312);
+//        prices = vehicle.allPrices();
+//        names = vehicle.allNames();
+//        for (int i = 0; i < vehicle.allNames().length; i++) {
+//            System.out.println(names[i] + " : " + prices[i]);
+//        }
+        vehicle.addModel("RC10",-2523);
+        //vehicle.modifyPrice("RC7",2141);
         vehicle.removeModel("RC3");
         prices = vehicle.allPrices();
         names = vehicle.allNames();
         for (int i = 0; i < vehicle.allNames().length; i++) {
             System.out.println(names[i] + " : " + prices[i]);
         }
-        System.out.println("Среднее арифметическое: " + Transports.arifMidl(vehicle));
-        Transports.allNames(vehicle);
-        Transports.allPrices(vehicle);
-        Transports.outputTransport(vehicle, new DataOutputStream(new FileOutputStream("data.bin")));
-        Transports.inputTransport(new DataInputStream(new FileInputStream("data.bin")));
+//        System.out.println("Среднее арифметическое: "+ Transports.arifMidl(vehicle));
+//        Transports.allNames(vehicle);
+//        Transports.allPrices(vehicle);
 //        vehicle.modifyPrice("RC",12345);
 //        System.out.println(vehicle.priceOfModel("RC"));
     }

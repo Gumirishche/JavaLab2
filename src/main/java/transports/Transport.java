@@ -6,6 +6,8 @@ import exceptions.NoSuchModelNameException;
 public interface Transport {
     String getBrand();
 
+    int getSize();
+
     void setBrand(String brand);
 
     String[] allNames();

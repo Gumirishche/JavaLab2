@@ -22,32 +22,38 @@ public class Bike implements Transport {
 
     private String brand;
     private int size;
-    private final Model head = new Model("CZ", 2800000);
 
+    private Model head;
+
+    //    private final Model head = new Model("CZ", 2800000);
+//
     {
-        head.prev = head;
-        head.next = head;
+//        head.prev = head;
+//        head.next = head;
+        SimpleDateFormat format = new SimpleDateFormat("ddMMyyyyhhmmss");
+        this.lastModified = Long.parseLong(format.format(new Date()));
     }
 
     private long lastModified;
 
-    public Bike(String brand, String[] names, double[] prices){
-
-    }
-
-    public Bike(int size) {
+    public Bike(String brand, int size) {
+        this.brand = brand;
         this.size = size;
-        Model prev;
-        for (int i = 1; i < size; i++) {
-            Model newModel = new Model("CZ" + i, 1000000 + i * 1000);
-            head.prev.next = newModel;
-            prev = head.prev;
-            head.prev = newModel;
-            head.prev.next = head;
-            head.prev.prev = prev;
+        if (size == 0) {
+        } else {
+            Model prev;
+            head = new Model("CZ", 28000);
+            head.prev = head;
+            head.next = head;
+            for (int i = 1; i < size; i++) {
+                Model newModel = new Model("CZ" + i, 1000000 + i * 1000);
+                head.prev.next = newModel;
+                prev = head.prev;
+                head.prev = newModel;
+                head.prev.next = head;
+                head.prev.prev = prev;
+            }
         }
-        SimpleDateFormat format = new SimpleDateFormat("ddMMyyyyhhmmss");
-        this.lastModified = Long.parseLong(format.format(new Date()));
     }
 
     public String getBrand() {
@@ -59,22 +65,31 @@ public class Bike implements Transport {
     }
 
     public void addModel(String name, double price) throws DuplicateModelNameException {
-        if (price < 0) {
-            throw new ModelPriceOutOfBoundsException("Цена не может быть меньше 0");
-        }
-        Model model1 = head.next;
-        while ((model1).equals(head)) {
-            if ((model1.name).equals(name)) {
+        if (size == 0) {
+            head = new Model(name, price);
+            head.prev = head;
+            head.next = head;
+        } else {
+            if (price < 0) {
+                throw new ModelPriceOutOfBoundsException("Цена не может быть меньше 0");
+            }
+            Model model1 = head.next;
+            if ((head.name).equals(name)) {
                 throw new DuplicateModelNameException("Модель с названием: " + name + " уже есть");
             }
-            model1 = model1.next;
+            while (!(model1).equals(head)) {
+                if ((model1.name).equals(name)) {
+                    throw new DuplicateModelNameException("Модель с названием: " + name + " уже есть");
+                }
+                model1 = model1.next;
+            }
+            Model model = new Model(name, price);
+            head.prev.next = model;
+            Model preModel = head.prev;
+            head.prev = model;
+            head.prev.prev = preModel;
+            head.prev.next = head;
         }
-        Model model = new Model(name, price);
-        head.prev.next = model;
-        Model preModel = head.prev;
-        head.prev = model;
-        head.prev.prev = preModel;
-        head.prev.next = head;
         size++;
         SimpleDateFormat format = new SimpleDateFormat("ddMMyyyyhhmmss");
         this.lastModified = Long.parseLong(format.format(new Date()));
@@ -89,6 +104,10 @@ public class Bike implements Transport {
             names[i] = newModel.name;
         }
         return names;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public double[] allPrices() {
@@ -116,7 +135,7 @@ public class Bike implements Transport {
     public void modifyName(String oldName, String newName) throws NoSuchModelNameException, DuplicateModelNameException {
         boolean flag = false;
         Model model1 = head.next;
-        while ((model1).equals(head)) {
+        while (!(model1).equals(head)) {
             if ((model1.name).equals(newName)) {
                 throw new DuplicateModelNameException("Модель с названием: " + newName + " уже есть");
             }
@@ -167,8 +186,10 @@ public class Bike implements Transport {
                 reModel.prev.next = reModel.next;
                 reModel.next.prev = reModel.prev;
                 flag = true;
+                size--;
                 break;
             }
+            reModel = reModel.next;
         }
         if (!flag) {
             throw new NoSuchModelNameException("Модели с таким именем: " + name + " не существует");
@@ -182,25 +203,28 @@ public class Bike implements Transport {
     }
 
     public static void main(String[] args) throws NoSuchModelNameException, InterruptedException, DuplicateModelNameException {
-        Bike bike = new Bike(4);
-        String[] names1 = bike.allNames();
+        Bike bike = new Bike("Mot", 0);
+        //String[] names1 = bike.allNames();
         bike.getDateOfChange();
         bike.addModel("RZ", 1800000);
+        bike.addModel("RZ1", 1800000);
+        //bike.addModel("RZ",213);
+        //bike.removeModel("RZghgh");
         String[] names2 = bike.allNames();
         bike.getDateOfChange();
-        for (String name : names1
-        ) {
-            System.out.println(name);
-        }
-        System.out.println(" ");
+//        for (String name : names1
+//        ) {
+//            System.out.println("1. " + name);
+//        }
+//        System.out.println(" ");
         for (String name : names2
         ) {
-            System.out.println(name);
+            System.out.println("2. " + name);
         }
-        System.out.println(bike.priceOfModel("CZ3"));
-        Thread.sleep(10000);
-        bike.modifyPrice("CZ3", 12345);
-        System.out.println(bike.priceOfModel("CZ3"));
-        bike.getDateOfChange();
+//        System.out.println("Name: CZ3  price:" + bike.priceOfModel("CZ3"));
+//        Thread.sleep(10000);
+//        bike.modifyPrice("CZ3", 12345);
+//        System.out.println("Name: CZ3  price:" + bike.priceOfModel("CZ3"));
+//        bike.getDateOfChange();
     }
 }
