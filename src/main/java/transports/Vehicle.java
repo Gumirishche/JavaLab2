@@ -4,11 +4,12 @@ import exceptions.DuplicateModelNameException;
 import exceptions.ModelPriceOutOfBoundsException;
 import exceptions.NoSuchModelNameException;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Vehicle implements Transport {
-    private class Model {
+public class Vehicle implements Transport, Serializable {
+    private class Model implements Serializable{
         String name;
         double price;
 

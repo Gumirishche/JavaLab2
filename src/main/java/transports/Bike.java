@@ -4,11 +4,12 @@ import exceptions.DuplicateModelNameException;
 import exceptions.ModelPriceOutOfBoundsException;
 import exceptions.NoSuchModelNameException;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Bike implements Transport {
-    private class Model {
+public class Bike implements Transport, Serializable {
+    private class Model implements Serializable{
         String name;
         double price;
         Model next;
@@ -28,19 +29,16 @@ public class Bike implements Transport {
     //    private final Model head = new Model("CZ", 2800000);
 //
     {
-//        head.prev = head;
-//        head.next = head;
         SimpleDateFormat format = new SimpleDateFormat("ddMMyyyyhhmmss");
         this.lastModified = Long.parseLong(format.format(new Date()));
     }
 
-    private long lastModified;
+    transient private long lastModified;
 
     public Bike(String brand, int size) {
         this.brand = brand;
         this.size = size;
-        if (size == 0) {
-        } else {
+        if (size != 0) {
             Model prev;
             head = new Model("CZ", 28000);
             head.prev = head;
@@ -114,7 +112,7 @@ public class Bike implements Transport {
         Model newModel = head;
         double[] prices = new double[size];
         prices[0] = newModel.price;
-        for (int i = 0; i < size; i++) {
+        for (int i = 1; i < size; i++) {
             newModel = newModel.next;
             prices[i] = newModel.price;
         }
